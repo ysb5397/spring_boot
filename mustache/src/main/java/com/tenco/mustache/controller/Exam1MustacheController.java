@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 // @Controller -> IOC 대상이 됨
+//@Controller : IOC -> 제어의 역전
 @Controller
-public class ExamMustacheController {
+public class Exam1MustacheController {
 
     // URL 맵핑 설계(주소 설계)
     // https://localhost/example/test1
@@ -45,6 +46,12 @@ public class ExamMustacheController {
         items.add("바나나");
         items.add("오렌지");
         model.addAttribute("items", items);
+
+        // 6. 주석: 템플릿에서 {{! comment }}로 렌더링되지 않는 주석 처리
+        // (컨트롤러에서는 별도 처리 불필요, 뷰에서 확인)
+
+        // 7. 부분 템플릿: {{> partialName}}으로 다른 템플릿 포함
+        // (컨트롤러에서는 별도 데이터 추가 불필요, 뷰에서 설정)
 
         // 서버 설정(yml 파일 확인)
         // prefix -> src/main/resources/templates/
