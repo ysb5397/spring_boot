@@ -3,9 +3,23 @@ package com.tenco.blog.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller // IoC 대상 - 싱글톤 패턴으로 관리 됨
 public class BoardController {
+
+    @PostMapping("/board/save")
+    // username, title, content --> dto를 통해서 받는 방법, 기본 데이터 타입 설정
+    // form 태그에서 넘어오는 데이터 받기
+    public String save(@RequestParam("title") String title,
+                       @RequestParam("content") String content,
+                       @RequestParam("username") String username) {
+        System.out.println("title : " + title);
+        System.out.println("content : " + content);
+        System.out.println("username : " + username);
+        return "redirect:/";
+    }
 
     @GetMapping({"/", "/index"})
     public String index() {
