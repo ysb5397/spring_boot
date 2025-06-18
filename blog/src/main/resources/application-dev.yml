@@ -6,7 +6,7 @@ server:
 
   port: 8080
 
-# 로그 레벨의 개념
+# 로그 레벨의 개념,
 # ERROR > WARN > INFO > DEBUG > TRACE
 logging:
   level:
