@@ -50,9 +50,14 @@ public class BoardNativeRepository {
     }
 
     public Board findById (int id) {
-        Query query = em.createNativeQuery("select * from board_tb where id = ? ", Board.class);
+        String sqlStr = "select * from board_tb where id = ? ";
+        Query query = em.createNativeQuery(sqlStr, Board.class);
+        // SQL Injection 방지 - 파라미터 바인딩
+        // 직접 문자열을 연결하지 않고 안전하게 값 전달
         query.setParameter(1, id);
 
+        // query.getSingleResult(); --> 단일 결과만 반환(만약, null이 리턴된다면 예외 발생) --> try catch
+        // 혹시 결과가 2개 이상의 행이 리턴된다면 예외 발생
         Board board = (Board) query.getSingleResult();
         return board;
     }

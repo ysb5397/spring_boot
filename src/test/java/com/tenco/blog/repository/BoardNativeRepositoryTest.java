@@ -34,4 +34,16 @@ public class BoardNativeRepositoryTest {
         Assertions.assertThat(boardList.size()).isEqualTo(4);
         Assertions.assertThat(boardList.get(3).getUsername()).isEqualTo("ssar");
     }
+
+    @Test
+    public void findById_test() {
+        int id = 1;
+        Board board = br.findById(id);
+
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
+        Assertions.assertThat(board.getUsername()).isEqualTo("ssar");
+
+        // 객체가 null이 아닌지 확인
+        Assertions.assertThat(board).isNotNull();
+    }
 }

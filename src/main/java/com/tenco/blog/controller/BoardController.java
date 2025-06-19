@@ -40,8 +40,6 @@ public class BoardController {
         return "board/save-form";
     }
 
-    //
-
     /**
      * 상세보기 화면 요청
      * board/1
