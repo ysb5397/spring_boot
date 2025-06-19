@@ -40,11 +40,20 @@ public class BoardNativeRepository {
     // 게시글 조회
     public List<Board> findAll() {
         // 쿼리 기술 --> 네이티브 쿼리
-        Query query = em.createNativeQuery("select * from board_tb order by id desc ");
+        // 형변환을 직접적으로 명시하는게 좋다
+        Query query = em.createNativeQuery("select * from board_tb order by id desc ", Board.class);
 
 //        query.getResultList() --> 여러 행의 결과를 List 객체로 반환
         // query.getSingleResult() --> 단일 결과만 반환(한 개의 row 데이터만 있을 때
-//        List<Board> list = query.getResultList();
-        return query.getResultList();
+        List<Board> list = query.getResultList();
+        return list;
+    }
+
+    public Board findById (int id) {
+        Query query = em.createNativeQuery("select * from board_tb where id = ? ", Board.class);
+        query.setParameter(1, id);
+
+        Board board = (Board) query.getSingleResult();
+        return board;
     }
 }

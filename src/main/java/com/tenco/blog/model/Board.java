@@ -1,6 +1,7 @@
 package com.tenco.blog.model;
 
 
+import com.tenco.blog.utils.DateUtil;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,4 +26,9 @@ public class Board {
     private String content;
     private String username;
     private Timestamp createdAt; // created_at (스네이크 케이스로 자동 변환)
+
+    // mustache 에서 표현할 time format 기능 구현
+    public String getTime() {
+        return DateUtil.timestampFormat(createdAt);
+    }
 }

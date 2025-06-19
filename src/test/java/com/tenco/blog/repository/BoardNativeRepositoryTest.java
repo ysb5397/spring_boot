@@ -32,5 +32,6 @@ public class BoardNativeRepositoryTest {
 
         // then -- 결과 검증(예상하는대로 동작하는지 검증)
         Assertions.assertThat(boardList.size()).isEqualTo(4);
+        Assertions.assertThat(boardList.get(3).getUsername()).isEqualTo("ssar");
     }
 }
