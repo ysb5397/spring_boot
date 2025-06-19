@@ -63,4 +63,13 @@ public class BoardNativeRepositoryTest {
 
         Assertions.assertThat(beforeRows).isGreaterThan(afterRows);
     }
+
+    @Test
+    public void updateById_test() {
+        int id = 1;
+        br.updateById(id, "제목 입니다", "내용 입니다.", "미상의 사용자");
+
+        Board board = br.findById(id);
+        Assertions.assertThat(board.getUsername()).isEqualTo("미상의 사용자");
+    }
 }
