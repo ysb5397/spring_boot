@@ -1,9 +1,12 @@
 package com.tenco.blog.repository;
 
+import com.tenco.blog.model.Board;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository // IoC 대상
 public class BoardNativeRepository {
@@ -18,7 +21,10 @@ public class BoardNativeRepository {
         this.em = em;
     }
 
+    // 게시글 생성
     // 트랜잭션 처리
+    // import 할 때, org.springframework.transaction.annotation.Transactional;
+    // 를 쓰는 것이 성능이 더 좋다
     @Transactional
     public void save(String title, String content, String username) {
         Query query = em.createNativeQuery("insert into board_tb(title, content, username, created_at) " +
@@ -29,5 +35,16 @@ public class BoardNativeRepository {
         query.setParameter(3, username);
 
         query.executeUpdate();
+    }
+
+    // 게시글 조회
+    public List<Board> findAll() {
+        // 쿼리 기술 --> 네이티브 쿼리
+        Query query = em.createNativeQuery("select * from board_tb order by id desc ");
+
+//        query.getResultList() --> 여러 행의 결과를 List 객체로 반환
+        // query.getSingleResult() --> 단일 결과만 반환(한 개의 row 데이터만 있을 때
+//        List<Board> list = query.getResultList();
+        return query.getResultList();
     }
 }

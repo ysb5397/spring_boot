@@ -17,21 +17,6 @@ public class BoardController {
         this.boardNativeRepository = boardNativeRepository;
     }
 
-    @PostMapping("/board/save")
-    // username, title, content --> dto를 통해서 받는 방법, 기본 데이터 타입 설정
-    // form 태그에서 넘어오는 데이터 받기
-    public String save(@RequestParam("title") String title,
-                       @RequestParam("content") String content,
-                       @RequestParam("username") String username) {
-        System.out.println("title : " + title);
-        System.out.println("content : " + content);
-        System.out.println("username : " + username);
-
-        boardNativeRepository.save(title, content, username);
-
-        return "redirect:/";
-    }
-
     @GetMapping({"/", "/index"})
     public String index() {
         //    prefix: /templates/
@@ -62,4 +47,18 @@ public class BoardController {
         return "board/detail";
     }
 
+    @PostMapping("/board/save")
+    // username, title, content --> dto를 통해서 받는 방법, 기본 데이터 타입 설정
+    // form 태그에서 넘어오는 데이터 받기
+    public String save(@RequestParam("title") String title,
+                       @RequestParam("content") String content,
+                       @RequestParam("username") String username) {
+        System.out.println("title : " + title);
+        System.out.println("content : " + content);
+        System.out.println("username : " + username);
+
+        boardNativeRepository.save(title, content, username);
+
+        return "redirect:/";
+    }
 }
