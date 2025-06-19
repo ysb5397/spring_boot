@@ -49,6 +49,7 @@ public class BoardNativeRepository {
         return list;
     }
 
+    // 특정 아이디로 조회
     public Board findById (int id) {
         String sqlStr = "select * from board_tb where id = ? ";
         Query query = em.createNativeQuery(sqlStr, Board.class);
@@ -60,5 +61,13 @@ public class BoardNativeRepository {
         // 혹시 결과가 2개 이상의 행이 리턴된다면 예외 발생
         Board board = (Board) query.getSingleResult();
         return board;
+    }
+
+    // 특정 게시글을 삭제하는 메서드
+    @Transactional
+    public void deleteById(int id) {
+        Query query = em.createNativeQuery("delete from board_tb where id = ? ");
+        query.setParameter(1, id);
+        query.executeUpdate();
     }
 }

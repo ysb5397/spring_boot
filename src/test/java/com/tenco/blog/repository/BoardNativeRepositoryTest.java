@@ -46,4 +46,21 @@ public class BoardNativeRepositoryTest {
         // 객체가 null이 아닌지 확인
         Assertions.assertThat(board).isNotNull();
     }
+
+    @Test
+    public void deleteById_test() {
+        int id = 1;
+        int beforeRows;
+        int afterRows;
+
+        List<Board> boardList = br.findAll();
+        beforeRows = boardList.size();
+        boardList.clear();
+
+        br.deleteById(id);
+        boardList = br.findAll();
+        afterRows = boardList.size();
+
+        Assertions.assertThat(beforeRows).isGreaterThan(afterRows);
+    }
 }

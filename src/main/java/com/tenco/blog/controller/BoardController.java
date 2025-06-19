@@ -69,4 +69,14 @@ public class BoardController {
 
         return "redirect:/";
     }
+
+    @PostMapping("/board/{id}/delete")
+    public String delete(@PathVariable(name = "id") int id) {
+        boardNativeRepository.deleteById(id);
+
+        // PRG 패턴(POST / Redirect / GET 적용
+        // 삭제 후 메인 페이지로 리다이렉트 하여 중복 삭제 방지
+        // 새로고침을 하더라도 삭제가 재실행 되지 않음
+        return "redirect:/";
+    }
 }
