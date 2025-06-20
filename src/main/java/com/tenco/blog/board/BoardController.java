@@ -53,4 +53,29 @@ public class BoardController {
 
         return "board/detail";
     }
+
+    // 게시글 수정하기 화면 연결하기
+    @GetMapping("/board/{id}/update-form")
+    public String updateForm(@PathVariable(name = "id") int id, HttpServletRequest request) {
+        Board board = br.findById(id);
+        request.setAttribute("board", board);
+
+        return "board/update-form";
+    }
+
+    @PostMapping("/board/{id}/update-form")
+    public String update(@PathVariable(name = "id") int id, HttpServletRequest request) {
+
+        Board board = br.findById(id);
+
+        board.setTitle(request.getParameter("title"));
+        board.setContent(request.getParameter("content"));
+        board.setUsername(request.getParameter("username"));
+
+//        request.setAttribute("board", board);
+        br.update(board);
+
+//        return "board/detail";
+        return "redirect:/board/" + id;
+    }
 }

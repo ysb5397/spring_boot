@@ -65,4 +65,20 @@ public class BoardPersistRepositoryTest {
         Board board = br.findById(id);
         Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
     }
+
+    @Test
+    public void update_test() {
+        int id = 1;
+        // update --> 더티 체킹
+        Board board = br.findById(id);
+        System.out.println("username: " + board.getUsername());
+
+        board.setUsername("미상");
+        // 영속성 컨텍스트에서 관리되는 상태이므로 굳이 br.update를 하지 않아도 동기화가 된다
+//        br.update(board);
+//        board = br.findById(id);
+
+        // 업데이트 완료 됨 -> 미상으로
+        Assertions.assertThat(board.getUsername()).isEqualTo("미상");
+    }
 }

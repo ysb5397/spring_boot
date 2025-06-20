@@ -1,6 +1,7 @@
 package com.tenco.blog.board;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,8 @@ public class BoardPersistRepository {
         String jpql = "select b from Board b order by b.id desc ";
 //        Query query = em.createQuery(jpql, Board.class);
 //        List<Board> boardList = query.getResultList();
+        // select b from Board b order by b.id desc = select * from
+
         return em.createQuery(jpql, Board.class).getResultList();
     }
 
@@ -65,9 +68,22 @@ public class BoardPersistRepository {
             return null;
         }
     }
-
     // JPQL 단점
     // 1. 1차 캐시를 우회하여 항상 DB 접근
     // 2. 코드 복잡 우려
     // 3. getSingleResult 호출 시 예외처리
+
+    // 업데이트 구문
+    @Transactional
+    public void update(Board board) {
+        String jpql = "update Board b set b.title = :title, b.content = :content, b.username = :username where b.id = :id ";
+
+        Query query = em.createQuery(jpql);
+
+        query.setParameter("title", board.getTitle());
+        query.setParameter("content", board.getContent());
+        query.setParameter("username", board.getUsername());
+        query.setParameter("id", board.getId());
+        query.executeUpdate();
+    }
 }
