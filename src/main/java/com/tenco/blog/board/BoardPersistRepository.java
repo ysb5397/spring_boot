@@ -86,4 +86,15 @@ public class BoardPersistRepository {
         query.setParameter("id", board.getId());
         query.executeUpdate();
     }
+
+    @Transactional
+    public void delete(Board board) {
+//        String jpql = "delete from Board b where b.id = :id ";
+//
+//        Query query = em.createQuery(jpql);
+//        query.setParameter("id", id);
+//        query.executeUpdate();
+
+        em.remove(board);
+    }
 }

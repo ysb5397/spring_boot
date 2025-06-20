@@ -78,4 +78,12 @@ public class BoardController {
 //        return "board/detail";
         return "redirect:/board/" + id;
     }
+
+    @PostMapping("/board/{id}/delete")
+    public String delete(@PathVariable(name = "id") int id) {
+        Board board = br.findById(id);
+        br.delete(board);
+
+        return "redirect:/";
+    }
 }

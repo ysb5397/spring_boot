@@ -81,4 +81,19 @@ public class BoardPersistRepositoryTest {
         // 업데이트 완료 됨 -> 미상으로
         Assertions.assertThat(board.getUsername()).isEqualTo("미상");
     }
+
+    @Test
+    public void delete_test() {
+        int id = 1;
+        Board board = br.findById(id);
+        System.out.println("title: " + board.getTitle());
+
+        Assertions.assertThat(board).isNotNull();
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
+
+        br.delete(board);
+
+        board = br.findById(id);
+        Assertions.assertThat(board).isNull();
+    }
 }
