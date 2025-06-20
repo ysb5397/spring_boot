@@ -4,8 +4,7 @@ package com.tenco.blog.board;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +41,16 @@ public class BoardController {
 
         request.setAttribute("boardList", boardList);
         return "index";
+    }
+
+    // 게시물 상세보기
+    @GetMapping("/board/{id}")
+    public String detail(@PathVariable(name = "id") int id, HttpServletRequest request) {
+
+        // 1차 캐시 효과 -> DB에 접근하지 않고 바로 영속성 컨텍스트에서 꺼냄
+        Board board = br.findById(id);
+        request.setAttribute("board", board);
+
+        return "board/detail";
     }
 }

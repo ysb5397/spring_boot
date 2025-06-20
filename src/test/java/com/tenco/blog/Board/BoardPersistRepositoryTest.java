@@ -57,4 +57,12 @@ public class BoardPersistRepositoryTest {
             Assertions.assertThat(b.getId()).isNotNull();
         }
     }
+
+    @Test
+    public void findById_test() {
+        int id = 1;
+
+        Board board = br.findById(id);
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
+    }
 }

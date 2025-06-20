@@ -48,7 +48,26 @@ public class BoardPersistRepository {
     }
 
     // 게시글 선택 조회 기능
-    public Board findById() {
-        return null;
+    public Board findById(int id) {
+//        Board board = em.find(Board.class, id);
+        return em.find(Board.class, id);
     }
+
+    // 비교용 -> JPQL 방식으로 게시글 선택 조회
+    public Board findByIdWithJPQL(int id) {
+        String jpql = "select b from Board b where b.id = :id ";
+        // ? 대신 :변수명 으로 설정 후
+        // setParameter에서 "변수명", 값 으로 넣어준다.(이때, : 콜론 기호는 절대 장식용이 아니다)
+
+        try {
+            return em.createQuery(jpql, Board.class).setParameter("id", id).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // JPQL 단점
+    // 1. 1차 캐시를 우회하여 항상 DB 접근
+    // 2. 코드 복잡 우려
+    // 3. getSingleResult 호출 시 예외처리
 }
