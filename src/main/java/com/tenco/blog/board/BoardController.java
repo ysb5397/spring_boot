@@ -4,7 +4,8 @@ package com.tenco.blog.board;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -12,78 +13,33 @@ import java.util.List;
 @Controller // IoC 대상 - 싱글톤 패턴으로 관리 됨
 public class BoardController {
 
-    // 자동으로 DI 처리
-    private final BoardPersistRepository br;
+    // DI 처리
+    private final BoardRepository boardRepository;
 
-    // 화면 연결 처리
-    @GetMapping("/board/save-form")
-    public String saveForm() {
-        return "board/save-form";
-    }
+    @GetMapping("/")
+    public String index(HttpServletRequest request) {
 
-    // 게시글 작성 액션(수행) 처리
-    @PostMapping("/board/save")
-    public String save(BoardRequest.SaveDTO reqDTO) {
-        // HTTP 요청 본문 : title=값&content=값&username=값
-        // form MIME (application/x-www-form-urlencoded)
-
-        // DTO를 받아서 Board 객체를 만들고 넣어야 함
-        Board board = reqDTO.toEntity();
-        br.save(board);
-
-        // PRG 패턴
-        return "redirect:/";
-    }
-
-    @GetMapping({"/", "/index"})
-    public String boardList(HttpServletRequest request) {
-        List<Board> boardList = br.findAll();
-
+        // 1. 게시글 목록 조회
+        List<Board> boardList = boardRepository.findByAll();
+        // 2. 생각해볼 사항 - Board 엔티티에는 User 엔티티와 연관관계 중
+        // 연관 관계 호출 확인
+        // boardList.get(0).getUser().getUsername();
+        // 3. 뷰에 데이터 전달
         request.setAttribute("boardList", boardList);
         return "index";
     }
 
-    // 게시물 상세보기
+
+    /**
+     * 게시글 상세 보기 화면 요청
+     * @param id - 게시글 pk
+     * @param request (뷰에 데이터 전달)
+     * @return detail.mustache
+     */
     @GetMapping("/board/{id}")
-    public String detail(@PathVariable(name = "id") int id, HttpServletRequest request) {
-
-        // 1차 캐시 효과 -> DB에 접근하지 않고 바로 영속성 컨텍스트에서 꺼냄
-        Board board = br.findById(id);
+    public String detail(@PathVariable(name = "id") Long id, HttpServletRequest request) {
+        Board board = boardRepository.findById(id);
         request.setAttribute("board", board);
-
         return "board/detail";
-    }
-
-    // 게시글 수정하기 화면 연결하기
-    @GetMapping("/board/{id}/update-form")
-    public String updateForm(@PathVariable(name = "id") int id, HttpServletRequest request) {
-        Board board = br.findById(id);
-        request.setAttribute("board", board);
-
-        return "board/update-form";
-    }
-
-    @PostMapping("/board/{id}/update-form")
-    public String update(@PathVariable(name = "id") int id, HttpServletRequest request) {
-
-        Board board = br.findById(id);
-
-        board.setTitle(request.getParameter("title"));
-        board.setContent(request.getParameter("content"));
-        board.setUsername(request.getParameter("username"));
-
-//        request.setAttribute("board", board);
-        br.update(board);
-
-//        return "board/detail";
-        return "redirect:/board/" + id;
-    }
-
-    @PostMapping("/board/{id}/delete")
-    public String delete(@PathVariable(name = "id") int id) {
-        Board board = br.findById(id);
-        br.delete(board);
-
-        return "redirect:/";
     }
 }
