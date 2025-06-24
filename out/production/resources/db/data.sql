@@ -30,6 +30,8 @@ INSERT INTO board_tb (title, content, user_id, created_at) VALUES
 INSERT INTO board_tb (title, content, user_id, created_at) VALUES
 ('첫 번째 게시글입니다', '안녕하세요! 블로그에 처음 글을 올려봅니다. 앞으로 자주 소통해요~', 4, NOW());
 
--- kim 사용자가 작성한 게시글 (1개)
+-- kim 사용자가 작성한 게시글 (2개)
 INSERT INTO board_tb (title, content, user_id, created_at) VALUES
 ('맛집 추천 - 강남역 근처', '강남역 근처에서 점심 먹기 좋은 맛집들을 추천드립니다. 가성비도 좋아요!', 5, NOW());
+INSERT INTO board_tb (title, content, user_id, created_at) VALUES
+('주말 나들이 계획', '이번 주말에는 근교로 나들이 갈 계획입니다. 좋은 장소 추천해주세요!', 5, NOW());

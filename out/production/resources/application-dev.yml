@@ -63,6 +63,10 @@ spring:
       hibernate:
         # SQL 쿼리를 보기 좋게 포맷팅
         format_sql: true
+        # in query 선택
+        # 스프링 JPA에서 default_batch_fetch_size 설정은 복잡한 조회쿼리 작성시,
+        # 지연로딩으로 발생해야 하는 쿼리를 IN절로 한번에 모아보내는 기능이다.
+        default_batch_fetch_size: 10
     # data.sql 파일을 Hibernate 초기화 이후에 실행
     defer-datasource-initialization: true
     # 기본값 : 엔티티 - 카멜케이스 -> db 생성될 스네이크 케이스로 자동으로 설정 됨
