@@ -1,11 +1,14 @@
 package com.tenco.blog.board;
 
 
+import com.tenco.blog.user.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -41,5 +44,46 @@ public class BoardController {
         Board board = boardRepository.findById(id);
         request.setAttribute("board", board);
         return "board/detail";
+    }
+
+    /**
+     *  주소 설계 : http://localhost:8080/board/save-form
+     * @param session
+     * @return
+     */
+    // 게시글 작성 화면 요청
+    @GetMapping("/board/save-form")
+    public String saveForm(HttpSession session) {
+        // 권한 체크 -> 로그인 사용자만
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            // 로그인을 안한 경우 다시 로그인 페이지로 리다이렉트
+            return "redirect:/login-form";
+        }
+        return "board/save-form";
+    }
+
+    // 게시글 저장 액션 처리
+    @PostMapping("/board/save")
+    public String save(BoardRequest.saveDTO saveDTO, HttpSession session) {
+
+        try {
+            User sessionUser = (User) session.getAttribute("sessionUser");
+
+            if (sessionUser == null) {
+                return "redirect:/login-form";
+            }
+
+            // 유효성 검사
+            saveDTO.validate();
+
+            // 엔티티 만들기
+            Board board = saveDTO.toEntity(sessionUser);
+            boardRepository.save(board);
+            return "redirect:/";
+        } catch (Exception e) {
+            return "/board/save-form";
+        }
     }
 }

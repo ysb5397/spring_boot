@@ -4,13 +4,17 @@ package com.tenco.blog.board;
 import com.tenco.blog.user.User;
 import com.tenco.blog.utils.DateUtil;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 // 기본 생성자 - JPA에서 엔티티는 기본 생성자가 필요
 @Data
 @Table(name = "board_tb")
