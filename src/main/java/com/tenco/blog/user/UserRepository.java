@@ -1,6 +1,7 @@
 package com.tenco.blog.user;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +12,31 @@ public class UserRepository {
 
     private final EntityManager em;
 
-    // 회원정보 저장
+    // 사용자 정보 조회(이름 , 비밀번호 필요)
+    // where절로 이름과 비밀번호 확인
+    public User findByUsernameAndPassword(String username, String password) {
+        // JPQL
+        /**
+         * 로그인 요청 기능(사용자 정보 조회)
+         * @param username
+         * @param password
+         * @return 성공시 User 엔티티 반환하고, 실패시 null 반환
+         */
+        try {
+            String jpql = "select u from User u where u.username = :username and u.password = :password ";
+            TypedQuery typedQuery = em.createQuery(jpql, User.class);
+            typedQuery.setParameter("username", username);
+            typedQuery.setParameter("password", password);
+            typedQuery.getSingleResult();
+            return (User) typedQuery.getSingleResult();
+        } catch (Exception e) {
+            // 일치하는 사용자가 없거나 에러 발생 시 null 반환
+            // 로그인 실패
+            return null;
+        }
+    }
 
+    // 회원정보 저장
     /**
      * 회원 정보 저장 처리
      * @param user(비영속 상태)

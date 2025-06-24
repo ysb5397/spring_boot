@@ -41,4 +41,14 @@ public class UserRepositoryTest {
         User user = userRepository.findByUsername(username);
         Assertions.assertThat(user).isNull();
     }
+
+    @Test
+    public void findByUsernameAndPassword_로그인_테스트() {
+        String username = "ssar";
+        String password = "1234";
+        User user = userRepository.findByUsernameAndPassword(username, password);
+
+        Assertions.assertThat(user).isNotNull();
+        Assertions.assertThat(user.getUsername()).isEqualTo(username);
+    }
 }
