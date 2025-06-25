@@ -64,6 +64,28 @@ public class BoardController {
         return "board/save-form";
     }
 
+    @PostMapping("/board/save")
+    public String save(BoardRequest.saveDTO saveDTO, HttpSession session) {
+
+        try {
+            User sessionUser = (User) session.getAttribute("sessionUser");
+
+            if (sessionUser == null) {
+                return "redirect:/login-form";
+            }
+
+            // 유효성 검사
+            saveDTO.validate();
+
+            // 엔티티 만들기
+            Board board = saveDTO.toEntity(sessionUser);
+            boardRepository.save(board);
+            return "redirect:/";
+        } catch (Exception e) {
+            return "/board/save-form";
+        }
+    }
+
     // 게시글 저장 액션 처리
     // 게시글 삭제
     // 1. 로그인을 했는지
@@ -96,25 +118,56 @@ public class BoardController {
         return "redirect:/";
     }
 
-    @PostMapping("/board/save")
-    public String save(BoardRequest.saveDTO saveDTO, HttpSession session) {
+    // 게시글 수정하기 화면
+    @GetMapping("/board/{id}/update-form")
+    public String updateForm(@PathVariable(name = "id") Long id, HttpSession session, HttpServletRequest request) {
 
-        try {
-            User sessionUser = (User) session.getAttribute("sessionUser");
+        User sessionUser = (User) session.getAttribute("sessionUser");
 
-            if (sessionUser == null) {
-                return "redirect:/login-form";
-            }
-
-            // 유효성 검사
-            saveDTO.validate();
-
-            // 엔티티 만들기
-            Board board = saveDTO.toEntity(sessionUser);
-            boardRepository.save(board);
-            return "redirect:/";
-        } catch (Exception e) {
-            return "/board/save-form";
+        if (sessionUser == null) {
+            return "redirect:/login-form";
         }
+
+        Board board = boardRepository.findById(id);
+
+        if (board == null) {
+            throw new RuntimeException("이미 삭제된 게시글입니다.");
+        }
+
+        if (!board.isOwner(sessionUser.getId())) {
+            throw new RuntimeException("수정할 권한이 없습니다.");
+        }
+
+        request.setAttribute("board", board);
+
+        return "board/update-form";
+    }
+
+    @PostMapping("/board/{id}/update-form")
+    public String update(@PathVariable(name = "id") Long id,
+                         HttpSession session,
+                         BoardRequest.UpdateDTO updateDTO) {
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            return "redirect:/login-form";
+        }
+
+        updateDTO.validate();
+
+        Board board = boardRepository.findById(id);
+
+        if (board == null) {
+            throw new RuntimeException("게시글이 이미 삭제처리되었습니다.");
+        }
+
+        if (!board.isOwner(sessionUser.getId())) {
+            throw new RuntimeException("수정할 권한이 없습니다.");
+        }
+
+        boardRepository.updateById(id, updateDTO);
+
+        return "redirect:/board/" + id;
     }
 }

@@ -35,4 +35,20 @@ public class BoardRequest {
             }
         }
     }
+
+    @Data
+    public static class UpdateDTO {
+        private String title;
+        private String content;
+
+        public void validate() {
+            if (title == null || title.trim().isEmpty()) {
+                throw new IllegalArgumentException("제목은 필수값입니다!");
+            }
+
+            if (content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("내용은 필수값입니다!");
+            }
+        }
+    }
 }

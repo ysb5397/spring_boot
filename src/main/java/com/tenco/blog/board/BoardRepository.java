@@ -81,5 +81,19 @@ public class BoardRepository {
         // 1차 cache 에서도 자동 제거
         // 연관관계 처리도 자동 수행
     }
+
+    @Transactional
+    public Board updateById(Long id, BoardRequest.UpdateDTO updateDTO) {
+        Board board = findById(id);
+
+        board.setTitle(updateDTO.getTitle());
+        board.setContent(updateDTO.getContent());
+
+        // Dirty Checking 동작 과정
+        // 1. 영속성 컨텍스트가 엔티티 최초 조회 상태를 스냅샷으로 보관
+        // 2. 필드값 변경시 현재 상태와 스냅샷 비교
+        // 3. 트랜잭션 커밋 시점에 변경된 필드만 update 쿼리 자동 생성
+        return board;
+    }
 }
 
