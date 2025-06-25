@@ -63,4 +63,25 @@ public class UserRequest {
             }
         }
     }
+
+    @Data
+    public static class UpdateDTO {
+        private String password;
+        private String email;
+
+        public void validate() {
+            if (password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("비밀번호는 필수입니다.");
+            }
+
+            if (password.length() < 4) {
+                throw new IllegalArgumentException("비밀번호는 4글자 이상으로 입력해주세요.");
+            }
+
+            // 간단한 이메일 형식 검증( 정규화 표현식 )
+            if(!email.contains("@")) {
+                throw new IllegalArgumentException("잘못된 이메일 형식입니다");
+            }
+        }
+    }
 }

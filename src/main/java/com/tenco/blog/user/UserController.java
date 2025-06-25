@@ -105,4 +105,37 @@ public class UserController {
         httpSession.invalidate();
         return "redirect:/";
     }
+
+    @GetMapping("/user/update-form")
+    public String updateForm(HttpServletRequest request, HttpSession session) {
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            return "redirect:/login-form";
+        }
+
+        request.setAttribute("user", sessionUser);
+
+        return "user/update-form";
+    }
+
+    @PostMapping("/user/update")
+    public String update(UserRequest.UpdateDTO updateDTO, HttpSession session) {
+
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            return "redirect:/login-form";
+        }
+
+        updateDTO.validate();
+
+        // 회원정보 수정은 권한 체크가 필요 없음(세션에서 정보를 가져오기 때문)
+        User updateUser = userRepository.updateById(sessionUser.getId(), updateDTO);
+        session.setAttribute("sessionUser", updateUser);
+
+        // 다시 회원 정보 보기
+        return "redirect:/user/update-form";
+    }
 }

@@ -67,4 +67,26 @@ public class UserRepository {
             return null;
         }
     }
+
+
+    public User findById(Long id) {
+        User user = em.find(User.class, id);
+
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+
+        return user;
+    }
+
+    @Transactional
+    public User updateById(Long id, UserRequest.UpdateDTO updateDTO) {
+        // 조회하고 더티체킹
+        User user = findById(id);
+
+        // 객체의 상태값을 행위를 통해 변경
+        user.setPassword(updateDTO.getPassword());
+
+        return user;
+    }
 }
