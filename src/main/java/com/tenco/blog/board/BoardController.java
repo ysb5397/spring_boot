@@ -65,6 +65,37 @@ public class BoardController {
     }
 
     // 게시글 저장 액션 처리
+    // 게시글 삭제
+    // 1. 로그인을 했는지
+    // 2. 글이 존재하는지
+    // 3. 해당 글의 작성자인지
+    @PostMapping("/board/{id}/delete")
+    public String delete(@PathVariable(name = "id") Long id, HttpSession session) {
+
+        // 1. 로그인 체크
+        User sessionUser = (User) session.getAttribute("sessionUser");
+
+        if (sessionUser == null) {
+            return "redirect:/login-form";
+        }
+
+        Board board = boardRepository.findById(id);
+
+        if (board == null) {
+            throw new IllegalArgumentException("이미 삭제된 글입니다.");
+        }
+
+        if (!board.isOwner(sessionUser.getId())) {
+            throw new IllegalArgumentException("삭제할 권한이 없습니다.");
+        }
+//        if (!(sessionUser.getId() == board.getUser().getId())) {
+//            throw new IllegalArgumentException("삭제할 권한이 없습니다.");
+//        }
+
+        boardRepository.deleteById(id);
+        return "redirect:/";
+    }
+
     @PostMapping("/board/save")
     public String save(BoardRequest.saveDTO saveDTO, HttpSession session) {
 

@@ -38,16 +38,12 @@ public class Board {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    // 생성자 만들어 주기
-//    public Board(String title, String content, String username) {
-//        this.title = title;
-//        this.content = content;
-//        this.username = username;
-//    }
-
-
     public String getTime() {
         return DateUtil.timestampFormat(createdAt);
     }
 
+    // 게시글의 소유자를 직접 확인하는 기능을 만들어보자
+    public boolean isOwner(Long checkUserId) {
+        return this.user.getId().equals(checkUserId);
+    }
 }

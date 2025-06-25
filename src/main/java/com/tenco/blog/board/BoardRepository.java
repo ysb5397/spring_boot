@@ -49,5 +49,37 @@ public class BoardRepository {
         // 이후 시점에는 사실 같은 메모리 주소를 가리킨다
         return board;
     }
+
+    // 게시글 삭제
+    @Transactional
+    public void deleteById(Long id) {
+        // 1. 네이티브 쿼리
+        // 2. JPQL - Java Persistence Query Language
+        // 3. 영속성 처리 (em) - CRUD
+
+        // JPQL로 작성
+        String jpql = "delete from Board b where b.id = :id ";
+        TypedQuery query = (TypedQuery) em.createQuery(jpql);
+        query.setParameter("id", id);
+
+        int deletedCount = query.executeUpdate();
+        if (deletedCount == 0) {
+            throw new IllegalArgumentException("삭제할 게시글이 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void deleteByIdSafely(Long id) {
+        // 영속성 처리
+        Board board = em.find(Board.class, id);
+        // board --> 영속화 됨
+
+        if (board == null) {
+            throw new IllegalArgumentException("삭제할 게시글이 없습니다.");
+        }
+        em.remove(board);
+        // 1차 cache 에서도 자동 제거
+        // 연관관계 처리도 자동 수행
+    }
 }
 
