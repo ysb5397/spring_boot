@@ -1,8 +1,11 @@
 package com.tenco.blog.board;
 
+import com.tenco.blog._core.errors.exception.Exception404;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +15,7 @@ import java.util.List;
 @Repository // IoC + 싱글톤 패턴 관리 = 스프링 컨테이너
 public class BoardRepository {
 
-    // DI
+    private static final Logger log = LoggerFactory.getLogger(BoardRepository.class);
     private final EntityManager em;
 
     /**
@@ -20,6 +23,7 @@ public class BoardRepository {
      */
     public List<Board> findByAll() {
         // 조회 - JPQL 쿼리 선택
+        log.info("전체 게시글 조회 시작");
         String jqpl = " SELECT b FROM Board b ORDER BY b.id DESC ";
         TypedQuery query = em.createQuery(jqpl, Board.class);
         List<Board> boardList = query.getResultList();
@@ -32,6 +36,7 @@ public class BoardRepository {
      * @return : Board 엔티티
      */
     public Board findById(Long id) {
+        log.info("게시글 단건 조회 시작: {}", id);
         // 조회 - PK 조회는 무조건 엔티티 매니저에 메서드 활용이 이득이다.
         Board board = em.find(Board.class, id);
         return board;
@@ -44,6 +49,7 @@ public class BoardRepository {
      */
     @Transactional
     public Board save(Board board) {
+        log.info("게시글 저장 시작 - 제목: {}, 작성자: {}", board.getTitle(), board.getUser().getUsername());
         // 비영속 상태의 board Object를 영속성 컨텍스트에 저장하면
         em.persist(board);
         // 이후 시점에는 사실 같은 메모리 주소를 가리킨다
@@ -53,6 +59,7 @@ public class BoardRepository {
     // 게시글 삭제
     @Transactional
     public void deleteById(Long id) {
+        log.info("게시글 삭제 시작: {}", id);
         // 1. 네이티브 쿼리
         // 2. JPQL - Java Persistence Query Language
         // 3. 영속성 처리 (em) - CRUD
@@ -64,7 +71,7 @@ public class BoardRepository {
 
         int deletedCount = query.executeUpdate();
         if (deletedCount == 0) {
-            throw new IllegalArgumentException("삭제할 게시글이 없습니다.");
+            throw new Exception404("해당 게시글을 찾을 수 없습니다.");
         }
     }
 
@@ -75,7 +82,7 @@ public class BoardRepository {
         // board --> 영속화 됨
 
         if (board == null) {
-            throw new IllegalArgumentException("삭제할 게시글이 없습니다.");
+            throw new Exception404("해당 게시글을 찾을 수 없습니다.");
         }
         em.remove(board);
         // 1차 cache 에서도 자동 제거
@@ -84,6 +91,7 @@ public class BoardRepository {
 
     @Transactional
     public Board updateById(Long id, BoardRequest.UpdateDTO updateDTO) {
+        log.info("게시글 수정 시작: {}", id);
         Board board = findById(id);
 
         board.setTitle(updateDTO.getTitle());
