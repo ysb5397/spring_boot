@@ -1,7 +1,6 @@
 package com.tenco.blog.board;
 
 
-import com.tenco.blog._core.errors.exception.Exception401;
 import com.tenco.blog._core.errors.exception.Exception403;
 import com.tenco.blog._core.errors.exception.Exception404;
 import com.tenco.blog.user.User;
@@ -63,22 +62,13 @@ public class BoardController {
 
     /**
      *  주소 설계 : http://localhost:8080/board/save-form
-     * @param session
      * @return
      */
     // 게시글 작성 화면 요청
     @GetMapping("/board/save-form")
-    public String saveForm(HttpSession session) {
+    public String saveForm() {
 
         log.info("게시글 작성 화면 요청");
-
-        // 권한 체크 -> 로그인 사용자만
-        User sessionUser = (User) session.getAttribute("sessionUser");
-
-        if (sessionUser == null) {
-            // 로그인을 안한 경우 다시 로그인 페이지로 리다이렉트
-            throw new Exception401("로그인이 필요한 서비스입니다.");
-        }
         return "board/save-form";
     }
 
@@ -87,10 +77,6 @@ public class BoardController {
         log.info("게시글 작성 요청");
 
         User sessionUser = (User) session.getAttribute("sessionUser");
-
-        if (sessionUser == null) {
-            throw new Exception401("로그인이 필요한 서비스 입니다.");
-        }
 
         // 유효성 검사
         saveDTO.validate();
@@ -115,10 +101,6 @@ public class BoardController {
         // 1. 로그인 체크
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        if (sessionUser == null) {
-            throw new Exception401("로그인이 필요한 서비스 입니다.");
-        }
-
         Board board = boardRepository.findById(id);
 
         if (board == null) {
@@ -141,9 +123,6 @@ public class BoardController {
 
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        if (sessionUser == null) {
-            throw new Exception401("로그인이 필요한 서비스 입니다.");
-        }
 
         Board board = boardRepository.findById(id);
 
@@ -168,9 +147,7 @@ public class BoardController {
         log.info("게시글 수정 기능 요청 - boardId: {}, 새 제목: {}", id, updateDTO.getTitle());
         User sessionUser = (User) session.getAttribute("sessionUser");
 
-        if (sessionUser == null) {
-            throw new Exception401("로그인이 필요한 서비스입니다.");
-        }
+
 
         updateDTO.validate();
 

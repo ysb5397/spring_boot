@@ -49,7 +49,7 @@ public class MyExceptionHandler {
                         "alert('" +
                         e.getMessage() +
                         "'); " +
-                        "history.back();" +
+                        "location.href='/login-form'; " +
                         "</script>";
 
         return ResponseEntity
