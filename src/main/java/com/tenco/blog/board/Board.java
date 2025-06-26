@@ -32,7 +32,7 @@ public class Board {
 
     // 다대일
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // 외래키 컬러명 명시
+    @JoinColumn(name = "user_id", nullable = false) // 외래키 컬러명 명시
     private User user;
 
     @CreationTimestamp
