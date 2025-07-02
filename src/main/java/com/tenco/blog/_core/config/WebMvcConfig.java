@@ -15,7 +15,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/board/**", "/user/**")
+                .addPathPatterns("/board/**", "/user/**", "/reply/**")
                 .excludePathPatterns("/board/{id:\\d+}");
 
         // \\d+ -> 정규 표현식으로, 1개 이상의 숫자를 의미

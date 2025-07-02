@@ -1,6 +1,7 @@
 package com.tenco.blog.board;
 
 
+import com.tenco.blog.reply.ReplyService;
 import com.tenco.blog.user.User;
 import com.tenco.blog.utils.Define;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ public class BoardController {
      * DI 처리
      */
     private final BoardService boardService;
+    private final ReplyService replyService;
 
     /**
      * 1. 게시글 목록 조회
@@ -51,6 +53,7 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable(name = "id") Long id, Model model) {
         model.addAttribute("board", boardService.findById(id));
+        model.addAttribute("replies", replyService.findByBoard(id));
         return "board/detail";
     }
 

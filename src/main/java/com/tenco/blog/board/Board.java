@@ -1,6 +1,7 @@
 package com.tenco.blog.board;
 
 
+import com.tenco.blog.reply.Reply;
 import com.tenco.blog.user.User;
 import com.tenco.blog.utils.DateUtil;
 import jakarta.persistence.*;
@@ -8,9 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -46,4 +50,18 @@ public class Board {
     public boolean isOwner(Long checkUserId) {
         return this.user.getId().equals(checkUserId);
     }
+
+    /**
+     * 게시글과 댓글을 양방향 맵핑으로 설계
+     * FK의 주인은 reply
+     * mappedBy는 FK의 주인이 아닌 엔티티에 설정
+     *
+     * CascadeType.REMOVE
+     * 영속성 전이
+     * 게시글 삭제 시 관련된 모든 댓글도 자동 삭제 처리
+     */
+    // 일대다
+    @OrderBy("id desc")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
+    private List<Reply> replies = new ArrayList<>();
 }
