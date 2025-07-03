@@ -2,6 +2,7 @@ package com.tenco.blog.board;
 
 import com.tenco.blog._core.errors.exception.Exception403;
 import com.tenco.blog._core.errors.exception.Exception404;
+import com.tenco.blog.reply.Reply;
 import com.tenco.blog.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -68,6 +69,30 @@ public class BoardService {
 
         // 4. 조회된 게시글 반환
         return boardList;
+    }
+
+    public Board findByIdWithReplies(Long id, User sessionUser) {
+        // 1. 게시글 조회
+        Board board = boardJpaRepository.findByIdJoinUser(id).orElseThrow(() -> new Exception404("게시글을 찾을 수 없습니다"));
+
+        // 2. 게시글의 작성자
+        // 3. 게시글 소유권 설정(수정 / 삭제 표시용)
+        if (sessionUser != null) {
+            boolean isBoardOwner = board.isOwner(sessionUser.getId());
+            board.setBoardOwner(isBoardOwner);
+        }
+
+        // 댓글 정보 --> Board로 댓글 가져옴
+        List<Reply> replies = board.getReplies();
+
+        // 댓글 소유권 설정 (삭제 버튼 표시용)
+        if (sessionUser != null) {
+            replies.forEach(reply -> {
+                boolean isReplyOwner = reply.isOwner(sessionUser.getId());
+                reply.setReplyOwner(isReplyOwner);
+            });
+        }
+        return board;
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.tenco.blog.reply;
 
+import com.tenco.blog._core.errors.exception.Exception400;
+import com.tenco.blog._core.errors.exception.Exception403;
 import com.tenco.blog._core.errors.exception.Exception404;
 import com.tenco.blog.board.Board;
 import com.tenco.blog.board.BoardJpaRepository;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,8 +39,19 @@ public class ReplyService {
         replyJpaRepository.save(saveDTO.toEntity(sessionUser, board));
     }
 
-    // 댓글 삭제 기능
-    public void delete() {
+    @Transactional
+    public void deleteById(Long id, User sessionUser) {
+        log.info("삭제 서비스 시작 : 댓글 ID - {}", id);
 
+        Reply reply = replyJpaRepository.findById(id).orElseThrow(() ->
+            new Exception404("삭제할 댓글이 없습니다.")
+        );
+
+        // 현재 로그인한 사용자와 댓글 소유자 확인
+        if (!reply.isOwner(sessionUser.getId())) {
+            throw new Exception403("삭제 권한이 없습니다.");
+        }
+
+        replyJpaRepository.deleteById(id);
     }
 }
