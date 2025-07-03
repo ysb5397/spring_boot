@@ -27,7 +27,6 @@ public class BoardController {
      * DI 처리
      */
     private final BoardService boardService;
-    private final ReplyService replyService;
 
     /**
      * 1. 게시글 목록 조회
@@ -51,9 +50,10 @@ public class BoardController {
      * @return detail.mustache
      */
     @GetMapping("/board/{id}")
-    public String detail(@PathVariable(name = "id") Long id, Model model) {
-        model.addAttribute("board", boardService.findById(id));
-        model.addAttribute("replies", replyService.findByBoard(id));
+    public String detail(@PathVariable(name = "id") Long id, Model model, HttpSession session) {
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
+        Board board = boardService.findByIdWithReplies(id, sessionUser);
+        model.addAttribute("board", board);
         return "board/detail";
     }
 

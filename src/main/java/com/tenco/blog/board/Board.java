@@ -46,6 +46,10 @@ public class Board {
         return DateUtil.timestampFormat(createdAt);
     }
 
+    // 현재 로그인한 유저와 게시글 작성자 여부를 판단
+    @Transient
+    private boolean isBoardOwner;
+
     // 게시글의 소유자를 직접 확인하는 기능을 만들어보자
     public boolean isOwner(Long checkUserId) {
         return this.user.getId().equals(checkUserId);
