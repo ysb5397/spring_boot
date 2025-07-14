@@ -19,50 +19,59 @@ public class UserService {
 
 
     /**
-     * 회원가입 처리
+     * 회원가입 처리 - DTO 변환
      */
     @Transactional // 메서드 레벨에서 쓰기 전용 트랜잭션 활성화
-    public User join(UserRequest.JoinDTO joinDTO) {
-        //1. 사용자명 중복 체크
+    public UserResponse.JoinDTO join(UserRequest.JoinDTO joinDTO) {
         userJpaRepository.findByUsername(joinDTO.getUsername())
                 .ifPresent(user1 -> {
                     throw new Exception400("이미 존재하는 사용자명입니다");
                 });
-        return userJpaRepository.save(joinDTO.toEntity());
+
+        User savedUser = userJpaRepository.save(joinDTO.toEntity());
+
+        return new UserResponse.JoinDTO(savedUser);
     }
 
     /**
-     * 로그인 처리
+     * 로그인 처리 - DTO 변환
      */
-    public User login(UserRequest.LoginDTO loginDTO) {
-        return userJpaRepository
-                .findByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword())
+    public UserResponse.LoginDTO login(UserRequest.LoginDTO loginDTO) {
+        User selectedUser = userJpaRepository.findByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword())
                 .orElseThrow(() -> {
-                    return new Exception400("사용자명 또는 비밀번호가 틀렸어요");
+                    throw new Exception400("이름 또는 비밀번호가 틀렸습니다.");
                 });
+
+        return new UserResponse.LoginDTO(selectedUser);
     }
 
     /**
      *  사용자 정보 조회
      */
-    public User findById(Long id) {
-        return userJpaRepository.findById(id).orElseThrow(() -> {
+    public UserResponse.DetailDTO findById(Long id) {
+        // 권한 검사는 일단 생략
+
+        User selectedUser = userJpaRepository.findById(id).orElseThrow(() -> {
             log.warn("사용자 조회 실패 - ID {}", id);
             return new Exception404("사용자를 찾을 수 없습니다");
         });
+
+        return new UserResponse.DetailDTO(selectedUser);
     }
 
     /**
      *  회원정보 수정 처리 (더티 체킹)
      */
     @Transactional
-    public User updateById(Long userId, UserRequest.UpdateDTO updateDTO) {
-        // 1.
-        // 2. 사용자 조회
-        // 3. 수정된 User 반환 왜? --> 세션 동기화 때문!!!
-        User user = findById(userId);
-        // user.update(updateDTO);  TODO 추후 추가
-        user.setPassword(updateDTO.getPassword());
-        return user;
+    public UserResponse.UpdateDTO updateById(Long userId, UserRequest.UpdateDTO updateDTO) {
+        log.info("회원 정보 수정 서비스 처리 시작 - ID : {}", userId);
+
+        User selectedUser = userJpaRepository.findById(userId)
+                .orElseThrow(() -> {
+                    throw new Exception404("사용자를 찾을 수 없습니다.");
+                });
+
+        selectedUser.update(updateDTO);
+        return new UserResponse.UpdateDTO(selectedUser);
     }
 }

@@ -38,4 +38,11 @@ public class User {
         this.email = email;
         this.createdAt = createdAt;
     }
+
+    public void update(UserRequest.UpdateDTO updateDTO) {
+        updateDTO.validate();
+
+        this.password = updateDTO.getPassword();
+        this.email = updateDTO.getEmail();
+    }
 }
