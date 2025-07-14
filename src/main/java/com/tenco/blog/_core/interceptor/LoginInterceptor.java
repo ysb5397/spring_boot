@@ -28,16 +28,4 @@ public class LoginInterceptor implements HandlerInterceptor {
        }
        return true;
     }
-
-    // 뷰가 렌터링 되기전에 콜백 되는 메서드
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
-    }
-
-    // 뷰가 완전 렌더링이 된 후 호출 될 수 있다.
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
-    }
 }
