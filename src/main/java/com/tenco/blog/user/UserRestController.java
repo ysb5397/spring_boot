@@ -37,7 +37,7 @@ public class UserRestController {
         log.info("로그인 API 호출 - 사용자명 : {}", loginDTO.getUsername());
         loginDTO.validate();
         UserResponse.LoginDTO loginUser = userService.login(loginDTO);
-        session.setAttribute(Define.SESSION_USER, loginUser);
+        session.setAttribute(Define.SESSION_USER, null);
         return ResponseEntity.ok(new ApiUtil<>(loginUser));
     }
 

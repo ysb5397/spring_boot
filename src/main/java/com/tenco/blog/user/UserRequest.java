@@ -35,7 +35,7 @@ public class UserRequest {
                 throw new IllegalArgumentException("비밀번호는 필수야");
             }
             // 간단한 이메일 형식 검증 (정규화 표현식)
-            if(email.contains("@") == false) {
+            if(!email.contains("@")) {
                 throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다");
             }
         }
@@ -67,9 +67,6 @@ public class UserRequest {
     public static class UpdateDTO {
         private String password;
         private String email;
-        // username <-- 유니크로 설정 함
-
-        // toEntity (더티체킹 사용)
 
         public void validate() {
             if(password == null || password.trim().isEmpty()) {
@@ -79,7 +76,7 @@ public class UserRequest {
                 throw new IllegalArgumentException("비밀번호는 4자 이상이어야 합니다");
             }
             // 간단한 이메일 형식 검증 (정규화 표현식)
-            if(email.contains("@") == false) {
+            if(!email.contains("@")) {
                 throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다");
             }
         }

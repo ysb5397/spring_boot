@@ -75,8 +75,13 @@ public class Board {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.REMOVE)
     List<Reply> replies = new ArrayList<>(); // List 선언과 동시에 초기화
 
+    // 수정 기능 추가
+    public void update(BoardRequest.UpdateDTO updateDTO) {
+        updateDTO.validate();
 
-
+        this.title = updateDTO.getTitle();
+        this.content = updateDTO.getContent();
+    }
 }
 
 
