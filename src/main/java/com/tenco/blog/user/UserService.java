@@ -1,11 +1,9 @@
 package com.tenco.blog.user;
 
 import com.tenco.blog._core.errors.exception.Exception400;
-import com.tenco.blog._core.errors.exception.Exception401;
 import com.tenco.blog._core.errors.exception.Exception403;
 import com.tenco.blog._core.errors.exception.Exception404;
 import lombok.RequiredArgsConstructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -88,5 +86,14 @@ public class UserService {
                 });
 
         return new UserResponse.DetailDTO(selectedUser);
+    }
+
+    public User findByUserId(Long id) {
+        User user = userJpaRepository.findById(id)
+                .orElseThrow(() -> {
+                   throw new Exception404("유저를 찾을 수 없습니다.");
+                });
+
+        return user;
     }
 }

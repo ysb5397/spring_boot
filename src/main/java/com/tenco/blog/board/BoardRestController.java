@@ -4,10 +4,12 @@ import com.tenco.blog._core.common.ApiUtil;
 import com.tenco.blog.user.User;
 import com.tenco.blog.utils.Define;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +23,11 @@ public class BoardRestController {
 
     // 게시글 생성
     @PostMapping("/api/boards")
-    public ResponseEntity<?> save(@RequestBody BoardRequest.SaveDTO saveDTO,
+    public ResponseEntity<?> save(@RequestBody @Valid BoardRequest.SaveDTO saveDTO,
+                                                               Errors errors,
                                                                HttpSession session) {
 
         log.info("게시글 저장 API 호출 - title : {}", saveDTO.getTitle());
-        saveDTO.validate();
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         BoardResponse.SaveDTO saveBoard = boardService.save(saveDTO, sessionUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiUtil<>(saveBoard));
@@ -54,10 +56,10 @@ public class BoardRestController {
     // 게시글 수정
     @PutMapping("/api/boards/{id}/update")
     public ResponseEntity<ApiUtil<BoardResponse.UpdateDTO>> updateBoard(@PathVariable(name = "id") Long id,
-                                                                        @RequestBody BoardRequest.UpdateDTO updateDTO,
+                                                                        @RequestBody @Valid BoardRequest.UpdateDTO updateDTO,
+                                                                        Errors errors,
                                                                         HttpSession session) {
         log.info("게시글 수정 API 호출 - ID : {}", id);
-        updateDTO.validate();
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         BoardResponse.UpdateDTO updateBoard = boardService.update(id, updateDTO, sessionUser);
         return ResponseEntity.ok().body(new ApiUtil<>(updateBoard));

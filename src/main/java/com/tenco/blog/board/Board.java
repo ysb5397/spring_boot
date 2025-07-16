@@ -77,8 +77,6 @@ public class Board {
 
     // 수정 기능 추가
     public void update(BoardRequest.UpdateDTO updateDTO) {
-        updateDTO.validate();
-
         this.title = updateDTO.getTitle();
         this.content = updateDTO.getContent();
     }

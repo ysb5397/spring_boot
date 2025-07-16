@@ -40,7 +40,6 @@ public class User {
     }
 
     public void update(UserRequest.UpdateDTO updateDTO) {
-        updateDTO.validate();
 
         this.password = updateDTO.getPassword();
         this.email = updateDTO.getEmail();

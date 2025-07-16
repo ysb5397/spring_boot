@@ -3,16 +3,13 @@ package com.tenco.blog.user;
 import com.tenco.blog._core.common.ApiUtil;
 import com.tenco.blog.utils.Define;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.HttpParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.text.Utilities;
-import javax.swing.text.html.parser.Entity;
 
 @Slf4j // 사용시 Logger 자동 선언됨
 @RestController
@@ -23,21 +20,22 @@ public class UserRestController {
 
     // 회원가입
     @PostMapping("/join")
-    public ResponseEntity<ApiUtil<UserResponse.JoinDTO>> join(@RequestBody UserRequest.JoinDTO joinDTO) {
+    public ResponseEntity<ApiUtil<UserResponse.JoinDTO>> join(@RequestBody @Valid UserRequest.JoinDTO joinDTO,
+                                                              Errors errors) {
         log.info("회원가입 API 호출 - 사용자명 : {}, 이메일 : {}", joinDTO.getUsername(), joinDTO.getEmail());
-        joinDTO.validate();
         UserResponse.JoinDTO joinUser = userService.join(joinDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiUtil<>(joinUser));
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ApiUtil<UserResponse.LoginDTO>> login(@RequestBody UserRequest.LoginDTO loginDTO,
+    public ResponseEntity<ApiUtil<UserResponse.LoginDTO>> login(@RequestBody @Valid UserRequest.LoginDTO loginDTO,
+                                                                Errors errors,
                                                                 HttpSession session) {
         log.info("로그인 API 호출 - 사용자명 : {}", loginDTO.getUsername());
-        loginDTO.validate();
         UserResponse.LoginDTO loginUser = userService.login(loginDTO);
-        session.setAttribute(Define.SESSION_USER, null);
+        User sessionUser = userService.findByUserId(loginUser.getId());
+        session.setAttribute(Define.SESSION_USER, sessionUser);
         return ResponseEntity.ok(new ApiUtil<>(loginUser));
     }
 
@@ -54,9 +52,10 @@ public class UserRestController {
     // 회원 정보 수정
     @PutMapping("/api/users/{id}")
     public ResponseEntity<ApiUtil<UserResponse.UpdateDTO>> updateUser(@PathVariable(name = "id") Long id,
-                                                                      @RequestBody UserRequest.UpdateDTO updateDTO) {
+                                                                      @RequestBody @Valid UserRequest.UpdateDTO updateDTO,
+                                                                      Errors errors) {
+
         log.info("회원 정보 수정 API 호출 - 사용자 아이디 : {}", id);
-        updateDTO.validate();
         UserResponse.UpdateDTO updateUser = userService.updateById(id, updateDTO);
         return ResponseEntity.ok(new ApiUtil<>(updateUser));
     }
