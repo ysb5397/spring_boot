@@ -28,8 +28,6 @@ public class UserRequest {
         @Pattern(regexp = "^[a-zA-Z0-9]{2,10}@[a-zA-Z]{2,6}\\.[a-zA-Z]{2,3}$", message = "이메일을 올바른 형식으로 입력해주세요.")
         private String email;
 
-        // JoinDTO 를 User Object 변환 하는 메서드 추가
-        // 계층간 데이터 변환을 위해 명확하게 분리
         public User toEntity() {
             return User.builder()
                     .username(this.username)
@@ -38,8 +36,7 @@ public class UserRequest {
                     .build();
         }
     }
-    
-    // 로그인 용 DTO
+
     @Data
     @Builder
     @NoArgsConstructor
@@ -54,7 +51,6 @@ public class UserRequest {
         private String password;
     }
 
-    // 회원 정보 수정용 DTO
     @Data
     public static class UpdateDTO {
         @NotEmpty(message = "비밀번호를 입력해주세요.")

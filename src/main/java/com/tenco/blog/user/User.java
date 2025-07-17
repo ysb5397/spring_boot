@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.sql.Timestamp;
 
 @NoArgsConstructor
@@ -18,18 +17,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 사용자 이름 중복 방지를 위한 유니크 제약 설정
     @Column(unique = true)
     private String username;
 
     private String password;
     private String email;
-    // now() -> x
-    // 엔티티가 영속화 될 때 자동으로 pc 현재시간을 설정해 준다
+
     @CreationTimestamp
     private Timestamp createdAt;
 
-    // 객체 생성시 가독성과 안정성 향상
     @Builder
     public User(Long id, String username, String password, String email, Timestamp createdAt) {
         this.id = id;
@@ -40,7 +36,6 @@ public class User {
     }
 
     public void update(UserRequest.UpdateDTO updateDTO) {
-
         this.password = updateDTO.getPassword();
         this.email = updateDTO.getEmail();
     }

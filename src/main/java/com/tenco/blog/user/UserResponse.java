@@ -5,7 +5,6 @@ import lombok.Data;
 
 public class UserResponse {
 
-    // 회원가입 후 응답 DTO
     @Data
     public static class JoinDTO {
         private Long id;
@@ -22,7 +21,6 @@ public class UserResponse {
         }
     }
 
-    // 로그인 응답
     @Data
     public static class LoginDTO {
         private Long id;
@@ -37,7 +35,6 @@ public class UserResponse {
         }
     }
 
-    // 수정 응답
     @Data
     public static class UpdateDTO {
         private Long id;
