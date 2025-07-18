@@ -66,7 +66,7 @@ public class Board {
     }
 
     public String getWriterName() {
-        return "";
+        return this.getUser().getUsername();
     }
 }
 
