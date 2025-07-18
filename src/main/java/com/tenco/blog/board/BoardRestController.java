@@ -30,7 +30,7 @@ public class BoardRestController {
     }
 
     // 모든 게시글 조회
-    @GetMapping("/api/boards")
+    @GetMapping("/")
     public ResponseEntity<?> allBoardInfo(@RequestParam(name = "page", defaultValue = "0") int page,
                                                                              @RequestParam(name = "size", defaultValue = "10") int size) {
         List<BoardResponse.MainDTO> boardList = boardService.findAll(page, size);
