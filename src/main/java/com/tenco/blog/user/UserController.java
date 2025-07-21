@@ -99,14 +99,19 @@ public class UserController {
     public String uploadProfileImage(@RequestParam(name = "profileImage") MultipartFile profileImage,
                                      HttpSession session) {
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-
+        UserRequest.ProfileImgDTO profileImgDTO = new UserRequest.ProfileImgDTO();
+        profileImgDTO.setProfileImg(profileImage);
+        profileImgDTO.validate();
+        User updateUser = userService.uploadProfileImage(sessionUser.getId(), profileImage);
+        session.setAttribute(Define.SESSION_USER, updateUser);
         return "redirect:/user/update-form";
     }
 
     @PostMapping("/user/delete-profile-image")
     public String deleteProfileImage(HttpSession session) {
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-
+        User user = userService.deleteProfileImage(sessionUser.getId());
+        session.setAttribute(Define.SESSION_USER, user);
         return "redirect:/user/update-form";
     }
 }

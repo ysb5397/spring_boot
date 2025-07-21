@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
@@ -16,7 +19,7 @@ public class UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserJpaRepository userJpaRepository;
-
+    private final ProfileUploadService profileUploadService;
 
     /**
      * 회원가입 처리
@@ -57,12 +60,39 @@ public class UserService {
      */
     @Transactional
     public User updateById(Long userId, UserRequest.UpdateDTO updateDTO) {
-        // 1.
-        // 2. 사용자 조회
-        // 3. 수정된 User 반환 왜? --> 세션 동기화 때문!!!
         User user = findById(userId);
-        // user.update(updateDTO);  TODO 추후 추가
         user.setPassword(updateDTO.getPassword());
+        return user;
+    }
+
+    @Transactional
+    public User uploadProfileImage(Long id, MultipartFile multipartFile) {
+        User user = findById(id);
+        String oldImagePath = user.getProfileImgPath();
+
+        try {
+            String newImagePath = profileUploadService.uploadProfileImage(multipartFile);
+
+            if (oldImagePath != null) {
+                profileUploadService.deleteProfileImagePath(oldImagePath);
+            }
+
+            user.setProfileImgPath(newImagePath);
+            return user;
+        } catch (IOException e) {
+            throw new Exception400("프로필 이미지 업로드 실패");
+        }
+    }
+
+    @Transactional
+    public User deleteProfileImage(Long id) {
+        User user = findById(id);
+        String imagePath = user.getProfileImgPath();
+        user.setProfileImgPath(null);
+
+        if (imagePath != null || !imagePath.isEmpty()) {
+            profileUploadService.deleteProfileImagePath(imagePath);
+        }
         return user;
     }
 }
