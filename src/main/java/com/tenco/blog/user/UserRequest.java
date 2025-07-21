@@ -1,9 +1,11 @@
 package com.tenco.blog.user;
 
+import com.tenco.blog._core.errors.exception.Exception400;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequest {
 
@@ -67,9 +69,7 @@ public class UserRequest {
     public static class UpdateDTO {
         private String password;
         private String email;
-        // username <-- 유니크로 설정 함
-
-        // toEntity (더티체킹 사용)
+        private String profileImage;
 
         public void validate() {
             if(password == null || password.trim().isEmpty()) {
@@ -85,6 +85,24 @@ public class UserRequest {
         }
 
     }
-    
 
+    @Data
+    public static class ProfileImgDTO {
+        // file 정보가 다 담겨 있음
+        private MultipartFile profileImg;
+
+        public void validate() {
+            if (profileImg == null || profileImg.isEmpty()) {
+                throw new Exception400("프로필 이미지를 선택해주세요.");
+            }
+
+            if (profileImg.getSize() > 20 * 1024 * 1024) {
+                throw new Exception400("파일 크기는 20MB 이하여야 합니다.");
+            }
+
+            if (profileImg.getContentType() == null || !profileImg.getContentType().startsWith("image/")) {
+                throw new Exception400("이미지 파일만 업로드 가능합니다.");
+            }
+        }
+    }
 }

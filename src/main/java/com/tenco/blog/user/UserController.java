@@ -11,6 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor // DI 처리
 @Controller
@@ -89,5 +93,20 @@ public class UserController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
+    }
+
+    @PostMapping("/user/upload-profile-image")
+    public String uploadProfileImage(@RequestParam(name = "profileImage") MultipartFile profileImage,
+                                     HttpSession session) {
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
+
+        return "redirect:/user/update-form";
+    }
+
+    @PostMapping("/user/delete-profile-image")
+    public String deleteProfileImage(HttpSession session) {
+        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
+
+        return "redirect:/user/update-form";
     }
 }

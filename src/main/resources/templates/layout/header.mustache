@@ -32,11 +32,31 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/board/save-form">글쓰기</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/user/update-form">회원정보보기</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">로그아웃</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{#sessionUser.profileImgPath}}
+                                <img src="{{sessionUser.profileImgPath}}" alt="프로필"
+                                     class="rounded-circle me-1"
+                                     style="width: 24px; height: 24px; object-fit: cover;">
+                            {{/sessionUser.profileImgPath}}
+                            {{^sessionUser.profileImgPath}}
+                                <i class="fas fa-user"></i>
+                            {{/sessionUser.profileImgPath}}
+                            {{sessionUser.username}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item">
+                                <a class="dropdown-item" href="/user/update-form">
+                                    <i class="fas fa-edit"></i>회원 정보 수정
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="nav-item">
+                                <a class="dropdown-item" href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>로그아웃
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 {{/sessionUser}}
             </ul>
