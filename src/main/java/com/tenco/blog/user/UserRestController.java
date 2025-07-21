@@ -3,6 +3,8 @@ package com.tenco.blog.user;
 import com.tenco.blog._core.common.ApiUtil;
 import com.tenco.blog._core.errors.exception.Exception401;
 import com.tenco.blog._core.utils.Define;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,13 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "User", description = "사용자 관리 API")
 @RestController
 @RequiredArgsConstructor
 public class UserRestController {
 
     private final UserService userService;
 
-    // 회원가입 API
+    @Operation(summary = "회원가입")
     @PostMapping("/join")
     public ResponseEntity<?> join(@Valid @RequestBody UserRequest.JoinDTO joinDTO,
                                   Errors errors) {
@@ -25,7 +28,7 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiUtil<>(joinUser));
     }
 
-    // 로그인 API
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserRequest.LoginDTO loginDTO,
                                    Errors errors) {
