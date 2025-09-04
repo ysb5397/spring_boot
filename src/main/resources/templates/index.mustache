@@ -2,13 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>채팅</title>
+    <title>채팅 (WebSocket)</title>
     <style>
         body { margin: 20px; font-family: Arial, sans-serif; }
         nav ul { list-style: none; padding: 0; display: flex; gap: 10px; }
         nav a { padding: 8px 15px; background: #666; color: white; text-decoration: none; }
 
-        /* 채팅창 */
         .chat-area {
             border: 1px solid #ccc;
             height: 300px;
@@ -17,7 +16,6 @@
             background: #f9f9f9;
         }
 
-        /* 메시지 */
         .message {
             padding: 5px 10px;
             margin: 3px 0;
@@ -30,6 +28,47 @@
             background: #e1f5fe;
             margin-left: 20%;
         }
+
+        /* 연결 상태 표시용 스타일 */
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+
+        /* 메시지 입력 폼 스타일 */
+        .message-form {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+
+        .message-form input {
+            padding: 8px;
+            width: 70%;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .message-form button {
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .message-form button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -40,41 +79,81 @@
     </ul>
 </nav>
 
-<h3>채팅</h3>
-<p style="color: #666; font-size: 13px;">2초마다 업데이트</p>
+<h3>채팅 (WebSocket 방식)</h3>
+<p style="color: #666; font-size: 13px;">실시간 업데이트</p>
 
+<!-- 연결 상태 표시 영역 -->
+<div id="status" class="status disconnected">연결 중...</div>
+
+<!-- 채팅 메시지 표시 영역 -->
 <div class="chat-area" id="chatArea">
     {{#models}}
-        <div class="message">{{message}}</div>
+        <div class="message">{{msg}}</div>
     {{/models}}
+</div>
+
+<!-- 메시지 입력 폼 -->
+<div class="message-form">
+    <form id="chatForm">
+        <input type="text" id="msgInput" placeholder="메시지를 입력하세요..." required>
+        <button type="submit" id="sendButton" disabled>연결 중...</button>
+    </form>
 </div>
 
 <script>
     const chatArea = document.getElementById('chatArea');
+    const status = document.getElementById('status');
+    const msgInput = document.getElementById('msgInput');
+    const chatForm = document.getElementById('chatForm');
+    const sendButton = document.getElementById('sendButton');
 
-<!--    자바 스크립트에서 EventSource 객체를 생성하여 SSE에 연결할 수 있다-->
-    const eventSource = new EventSource('/sse/connect');
+<!--      Websocket URL 형식 정의-->
+<!--      - ws:// -> websocket protocol-->
+<!--      - wss:// -> HTTPS 개념과 동일-->
+<!--      - /websocket-->
+<!--      -> ws://192.168.0.132:8080/websocket-->
 
-<!--    페이지 로드 시 스크롤 맨 아래로 이동-->
-    window.addEventListener('load', () => {
-        chatArea.scrollTop = chatArea.scrollHeight;
+    const socket = new WebSocket('ws://192.168.0.132:8080/websocket');
+
+    socket.onopen = function(event) {
+        status.textContent = '실시간 연결됨(Websocket)';
+        status.className = 'status connected';
+
+        sendButton.disabled = false;
+        sendButton.textContent = '전송';
+
+        msgInput.focus();
+
+        console.log('websocket 연결 성공');
+    };
+
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = msgInput.value.trim();
+        if (message && socket.readyState === WebSocket.OPEN) {
+            socket.send('CHAT:' + message);
+            msgInput.value = '';
+            msgInput.focus();
+            console.log('메시지 전송 : ' + message);
+        } else if (socket.readyState !== WebSocket.OPEN) {
+            alert('Websocket 연결이 끊어졌습니다.');
+        }
     });
 
-<!--    실제 메시지 처리-->
-    eventSource.addEventListener('broadcast', (event) => {
-       const broadcastMessage = event.data;
-       const messageDiv = document.createElement('div');
-       messageDiv.className = 'message';
-       messageDiv.textContent = broadcastMessage;
+    socket.onmessage = function(event) {
+        const message = event.data;
+        console.log('메시지 수신', message);
 
-       chatArea.appendChild(messageDiv);
+        if (message.startsWith('MESSAGE:')) {
+            const chatMessage = message.substring(8);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.textContent = chatMessage;
 
-       chatArea.scrollTop = chatArea.scrollHeight;
-    });
-
-    window.addEventListener('beforeunload', () => {
-        eventSource.close();
-    });
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+    }
 </script>
 
 </body>
