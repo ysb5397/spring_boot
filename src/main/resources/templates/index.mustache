@@ -100,61 +100,117 @@
     </form>
 </div>
 
+
+<!-- STOMP 라이브러리 로드 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
 <script>
+    // DOM 요소 참조
     const chatArea = document.getElementById('chatArea');
     const status = document.getElementById('status');
     const msgInput = document.getElementById('msgInput');
     const chatForm = document.getElementById('chatForm');
     const sendButton = document.getElementById('sendButton');
 
-<!--      Websocket URL 형식 정의-->
-<!--      - ws:// -> websocket protocol-->
-<!--      - wss:// -> HTTPS 개념과 동일-->
-<!--      - /websocket-->
-<!--      -> ws://192.168.0.132:8080/websocket-->
+    // 이 페이지에 전역 변수 선언
+    let stompClient = null;
 
-    const socket = new WebSocket('ws://192.168.0.132:8080/websocket');
+    // stomp 연결 시작
+    function connect() {
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
 
-    socket.onopen = function(event) {
-        status.textContent = '실시간 연결됨(Websocket)';
+        // stomp 연결 시도
+        stompClient.connect({}, onConnected, onError);
+    }
+
+    // 연결 요청 함수 실행
+    connect();
+
+    // 연결 성공 콜백 메서드 선언
+    function onConnected() {
+        status.textContent = '실시간 연결됨(Stomp)';
         status.className = 'status connected';
 
         sendButton.disabled = false;
-        sendButton.textContent = '전송';
-
+        sendButton.textContent = '전송하기';
         msgInput.focus();
 
-        console.log('websocket 연결 성공');
-    };
+        // 메시지 채널 구독 설정
+        stompClient.subscribe('/topic/message', onMessageReceived);
+        console.log('stomp 연결 및 구독 처리 완료');
+    }
 
+    // 연결 실패시 콜백
+    function onError(error) {
+        status.textContent = '연결 에러';
+        status.className = 'status disconnected';
+
+        sendButton.disabled = true;
+        msgInput.focus();
+        console.error('stomp 연결 에러', error);
+    }
+
+    // 메시지 수신 처리
+    function onMessageReceived(message) {
+        const chatMessage = message.body;
+
+        // 에러 메시지 처리
+        if (chatMessage.startsWith('ERROR:')) {
+            // HTML...
+            console.error('ERROR');
+            return;
+        }
+
+        // 일반 메시지 정상 수신
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+        messageDiv.textContent = chatMessage;
+        chatArea.appendChild(messageDiv);
+
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // 메시지 전송 로직 처리
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const message = msgInput.value.trim();
-        if (message && socket.readyState === WebSocket.OPEN) {
-            socket.send('CHAT:' + message);
+        sendMessage();
+    });
+
+    // 실제 메시지 전송
+    function sendMessage() {
+        // 작성한 채팅 메시지 가져오기
+        const sendMessage = msgInput.value.trim();
+
+        // 가져온 글자를 서버로 보내기
+        if (sendMessage && stompClient && stompClient.connected) {
+            stompClient.send('/app/chat', {}, sendMessage);
+
             msgInput.value = '';
             msgInput.focus();
-            console.log('메시지 전송 : ' + message);
-        } else if (socket.readyState !== WebSocket.OPEN) {
-            alert('Websocket 연결이 끊어졌습니다.');
+        } else {
+            alert('Stomp 연결이 끊어졌습니다.');
+        }
+    }
+
+    // 엔터키 이벤트 등록
+    msgInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
     });
 
-    socket.onmessage = function(event) {
-        const message = event.data;
-        console.log('메시지 수신', message);
-
-        if (message.startsWith('MESSAGE:')) {
-            const chatMessage = message.substring(8);
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            messageDiv.textContent = chatMessage;
-
-            chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
+    // 페이지 종료시 연결 차단
+    window.addEventListener('beforeunload', () => {
+        if (stompClient) {
+            stompClient.disconnect();
+            console.log('stomp 연결 종료');
         }
-    }
+    });
+
 </script>
+
 
 </body>
 </html>
