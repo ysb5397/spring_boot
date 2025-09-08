@@ -118,7 +118,7 @@
 
     // stomp 연결 시작
     function connect() {
-        const socket = new SockJS('/ws');
+        const socket = new SockJS('http://192.168.0.132:8080/ws');
         stompClient = Stomp.over(socket);
 
         // stomp 연결 시도
@@ -154,11 +154,16 @@
 
     // 메시지 수신 처리
     function onMessageReceived(message) {
-        const chatMessage = message.body;
+        const chatMessageDTO = JSON.parse(message.body);
 
         // 에러 메시지 처리
-        if (chatMessage.startsWith('ERROR:')) {
-            // HTML...
+        if (chatMessageDTO.type === "SYSTEM") {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'ERROR: 시스템 에러';
+            chatArea.appendChild(errorDiv);
+
+            chatArea.scrollTop = chatArea.scrollHeight;
             console.error('ERROR');
             return;
         }
@@ -166,7 +171,7 @@
         // 일반 메시지 정상 수신
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
-        messageDiv.textContent = chatMessage;
+        messageDiv.textContent = `[${chatMessageDTO.sender}]: ${chatMessageDTO.content}`;
         chatArea.appendChild(messageDiv);
 
         chatArea.scrollTop = chatArea.scrollHeight;
@@ -183,9 +188,17 @@
         // 작성한 채팅 메시지 가져오기
         const sendMessage = msgInput.value.trim();
 
+        let messageDto = {
+            "id": Date.now().toString(),
+            "content": sendMessage,
+            "sender": "ysb5397",
+            "type": "CHAT",
+            "timestamp": new Date().toString()
+        };
+
         // 가져온 글자를 서버로 보내기
         if (sendMessage && stompClient && stompClient.connected) {
-            stompClient.send('/app/chat', {}, sendMessage);
+            stompClient.send('/app/chat', {}, JSON.stringify(messageDto));
 
             msgInput.value = '';
             msgInput.focus();

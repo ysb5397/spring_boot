@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -44,20 +46,37 @@ public class ChatController {
     // SendTo -> 기존의 로직인 broadcastMessage()를 대체
     @MessageMapping("/chat")
     @SendTo("/topic/message")
-    public String sendMessage(String message, SimpMessageHeaderAccessor headerAccessor) {
+    public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO) {
         try {
-            log.debug("컨트롤러 진입 성공, 메시지: {}", message);
+            log.debug("컨트롤러 진입 성공, 메시지: {}", chatMessageDTO.getContent());
 
-            if (message == null || message.trim().isEmpty()) {
+            if (chatMessageDTO.getContent() == null || chatMessageDTO.getContent().trim().isEmpty()) {
                 log.warn("빈 메시지가 수신되었습니다");
                 return null;
             }
 
-            Chat savedChat = chatService.saveChat(message.trim());
-            return savedChat.getMessage();
+            Chat savedChat = chatService.saveChat(chatMessageDTO.getContent().trim());
+
+            return ChatMessageDTO.builder()
+                    .id(savedChat.getId().toString())
+                    .content(savedChat.getMessage())
+                    .sender(chatMessageDTO.getSender())
+                    .type("CHAT")
+                    .timestamp(LocalDateTime.now().toString())
+                    .build();
         } catch (Exception e) {
             log.error("메시지 저장 오류, 원인: {}", e.getMessage());
-            return "ERROR:메시지 저장에 실패함";
+            return createErrorMessage("메시지 전송 실패");
         }
+    }
+
+    // 에러 메시지 생성 메서드
+    private ChatMessageDTO createErrorMessage(String errorMessage) {
+        return ChatMessageDTO.builder()
+                .id(System.currentTimeMillis() + "")
+                .content(errorMessage)
+                .type("SYSTEM")
+                .timestamp(LocalDateTime.now().toString())
+                .build();
     }
 }
