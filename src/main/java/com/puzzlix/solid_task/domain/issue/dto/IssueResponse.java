@@ -13,11 +13,13 @@ public class IssueResponse {
         private final Long id;
         private final String title;
         private final IssueStatus status;
+        private final String reporterName;
 
         private FindAll(Issue issue) {
             this.id = issue.getId();
             this.title = issue.getTitle();
             this.status = issue.getStatus();
+            this.reporterName = issue.getReporter().getName();
         }
 
         public static List<FindAll> from(List<Issue> issues) {
