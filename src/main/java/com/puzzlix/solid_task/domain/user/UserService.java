@@ -1,6 +1,9 @@
 package com.puzzlix.solid_task.domain.user;
 
 import com.puzzlix.solid_task.domain.user.dto.UserRequest;
+import com.puzzlix.solid_task.domain.user.login.LocalLoginStrategy;
+import com.puzzlix.solid_task.domain.user.login.LoginStrategy;
+import com.puzzlix.solid_task.domain.user.login.LoginStrategyFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginStrategyFactory loginStrategyFactory;
 
     @Transactional
     public User signUp(UserRequest.SignUp request) {
@@ -26,13 +30,8 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public User login(UserRequest.Login request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-
-        return user;
+    public User login(String type, UserRequest.Login request) {
+        LoginStrategy loginStrategy = loginStrategyFactory.findStrategy(type);
+        return loginStrategy.login(request);
     }
 }

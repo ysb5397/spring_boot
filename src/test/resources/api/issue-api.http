@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### 로그인
-POST http://localhost:8080/api/users/login
+POST http://localhost:8080/api/users/login/local
 Content-Type: application/json
 
 {

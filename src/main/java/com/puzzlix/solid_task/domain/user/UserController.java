@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,9 +25,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(newUser));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserRequest.Login request, HttpServletResponse response) {
-        User loginUser = userService.login(request);
+    @PostMapping("/login/{type}")
+    public ResponseEntity<?> login(@Valid @RequestBody UserRequest.Login request, @PathVariable("type") String type, HttpServletResponse response) {
+        User loginUser = userService.login(type, request);
         String token = jwtProvider.createToken(loginUser.getEmail());
         response.setHeader("Authorization", "Bearer " + token);
         return ResponseEntity.ok().body(CommonResponseDto.success(loginUser));
