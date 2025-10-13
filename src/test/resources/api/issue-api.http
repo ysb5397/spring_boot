@@ -8,3 +8,7 @@ Content-Type: application/json
     "reporterId": 1,
     "projectId": 1
 }
+
+### 2. 이슈 조회 (GET)
+GET http://localhost:8080/api/issues
+Content-Type: application/json

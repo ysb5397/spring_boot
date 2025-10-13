@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "user_tb")
+@ToString(exclude = {"issues"})
 public class User {
 
     @Id

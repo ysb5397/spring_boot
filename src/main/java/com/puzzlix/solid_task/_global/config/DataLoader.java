@@ -28,6 +28,6 @@ public class DataLoader implements CommandLineRunner {
         Project project2 = projectRepository.save(new Project(null, "test2", "test2입니다", null));
 
         Issue issue1 = issueRepository.save(new Issue(null, "로그인 기능 구현", "aaa", IssueStatus.TODO, project2, testUser1, testUser2, null));
-        Issue issue2 = issueRepository.save(new Issue(null, "회원가입 기능 구현", "bbbb", IssueStatus.TODO, project1, testUser1, testUser2, null));
+        Issue issue2 = issueRepository.save(new Issue(null, "회원가입 기능 구현", "bbbb", IssueStatus.TODO, project1, testUser2, testUser2, null));
     }
 }
