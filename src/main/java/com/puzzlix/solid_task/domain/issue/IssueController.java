@@ -19,7 +19,7 @@ public class IssueController {
     public ResponseEntity<?> save(@RequestBody IssueRequest.Create createIssue) {
 
         Issue issue = issueService.create(createIssue);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(issue));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
     }
 
     @GetMapping
@@ -28,7 +28,14 @@ public class IssueController {
     }
 
     @GetMapping("/{issueId}")
-    public ResponseEntity<?> find(@PathVariable("issueId") Long id) {
-        return ResponseEntity.ok().body(CommonResponseDto.success(issueService.find(id)));
+    public ResponseEntity<?> find(@PathVariable("issueId") Long issueId) {
+        Issue issue = issueService.find(issueId);
+        return ResponseEntity.ok().body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
+    }
+
+    @PutMapping("/{issueId}")
+    public ResponseEntity<?> update(@PathVariable("issueId") Long issueId, @RequestBody IssueRequest.Update request) {
+        Issue issue = issueService.update(issueId, request);
+        return ResponseEntity.ok().body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
     }
 }

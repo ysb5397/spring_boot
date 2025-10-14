@@ -3,6 +3,7 @@ package com.puzzlix.solid_task.domain.user;
 import com.puzzlix.solid_task._global.config.jwt.JwtProvider;
 import com.puzzlix.solid_task._global.dto.CommonResponseDto;
 import com.puzzlix.solid_task.domain.user.dto.UserRequest;
+import com.puzzlix.solid_task.domain.user.dto.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid @RequestBody UserRequest.SignUp request) {
         User newUser = userService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(newUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(new UserResponse.Detail(newUser)));
     }
 
     @PostMapping("/login/{type}")
@@ -30,6 +31,6 @@ public class UserController {
         User loginUser = userService.login(type, request);
         String token = jwtProvider.createToken(loginUser.getEmail());
         response.setHeader("Authorization", "Bearer " + token);
-        return ResponseEntity.ok().body(CommonResponseDto.success(loginUser));
+        return ResponseEntity.ok().body(CommonResponseDto.success(new UserResponse.Detail(loginUser)));
     }
 }

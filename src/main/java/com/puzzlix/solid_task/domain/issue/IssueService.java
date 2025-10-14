@@ -6,6 +6,7 @@ import com.puzzlix.solid_task.domain.project.ProjectRepository;
 import com.puzzlix.solid_task.domain.user.User;
 import com.puzzlix.solid_task.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +44,32 @@ public class IssueService {
 
     public Issue find(Long id) {
         return issueRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public Issue update(Long issueId, IssueRequest.Update request) {
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다"));
+
+        if (request.getAssigneeId() != null) {
+            User assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new NoSuchElementException("해당 ID의 담당자를 찾을 수 없습니다"));
+            issue.setAssignee(assignee);
+        } else {
+            issue.setAssignee(null);
+        }
+
+        issue.setTitle(request.getTitle());
+        issue.setDescription(request.getDescription());
+
+        return issue;
+    }
+
+    @Transactional
+    public void delete(Long issueId) {
+        if (!issueRepository.existsById(issueId))
+            throw new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다");
+
+        issueRepository.deleteById(issueId);
     }
 }

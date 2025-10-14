@@ -9,6 +9,7 @@ import com.puzzlix.solid_task.domain.user.User;
 import com.puzzlix.solid_task.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,11 +19,14 @@ public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final IssueRepository issueRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-        User testUser1 = userRepository.save(new User(null, "홍길동", "a@a.com", "1234", null));
-        User testUser2 = userRepository.save(new User(null, "ㄴㅁㅇㅁㄴㅇ", "b@a.com", "1234123", null));
+        User testUser1 = userRepository.save(new User(null, "홍길동", "a@a.com",
+                passwordEncoder.encode("1234"), null));
+        User testUser2 = userRepository.save(new User(null, "ㄴㅁㅇㅁㄴㅇ", "b@a.com",
+                passwordEncoder.encode("1234123"), null));
 
         Project project1 = projectRepository.save(new Project(null, "test", "test입니다", null));
         Project project2 = projectRepository.save(new Project(null, "test2", "test2입니다", null));

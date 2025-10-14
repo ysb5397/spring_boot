@@ -1,20 +1,5 @@
-### 1. 새로운 이슈 생성 (POST)
-POST http://localhost:8080/api/issues/save
-Content-Type: application/json
-
-{
-    "title": "안녕",
-    "description": "테스트",
-    "reporterId": 1,
-    "projectId": 1
-}
-
-### 2. 이슈 조회 (GET)
-GET http://localhost:8080/api/issues
-Content-Type: application/json
-
 ### 유저
-### 회원가입
+### 1. 유저 회원가입 (POST)
 POST http://localhost:8080/api/users/signup
 Content-Type: application/json
 
@@ -24,11 +9,49 @@ Content-Type: application/json
     "password": "asd1234"
 }
 
-### 로그인
+### 2. 유저 로그인 (POST)
+# @name login
 POST http://localhost:8080/api/users/login/local
 Content-Type: application/json
 
 {
-    "email": "a@b.com",
-    "password": "asd1234"
+    "email": "a@a.com",
+    "password": "1234"
+}
+
+### 아래 토큰 자동 주입
+@token = {{login.response.headers.Authorization}}
+
+### 이슈
+### 1. 새로운 이슈 생성 (POST)
+POST http://localhost:8080/api/issues/save
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "title": "세번째 글입니다",
+    "description": "글의 내용입니다",
+    "reporterId": 3,
+    "projectId": 1
+}
+
+### 2. 모든 이슈 조회 (GET)
+GET http://localhost:8080/api/issues
+Content-Type: application/json
+Authorization: {{token}}
+
+### 3. 특정 이슈 조회 (GET)
+GET http://localhost:8080/api/issues/1
+Content-Type: application/json
+Authorization: {{token}}
+
+### 4. 특정 이슈 수정 (PUT)
+PUT http://localhost:8080/api/issues/3
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "title": "안녕하세요",
+    "description": "반갑습니다",
+    "assigneeId": "1"
 }
