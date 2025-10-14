@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping("/login/{type}")
     public ResponseEntity<?> login(@Valid @RequestBody UserRequest.Login request, @PathVariable("type") String type, HttpServletResponse response) {
         User loginUser = userService.login(type, request);
-        String token = jwtProvider.createToken(loginUser.getEmail());
+        String token = jwtProvider.createToken(loginUser);
         response.setHeader("Authorization", "Bearer " + token);
         return ResponseEntity.ok().body(CommonResponseDto.success(new UserResponse.Detail(loginUser)));
     }

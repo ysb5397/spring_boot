@@ -3,6 +3,7 @@ package com.puzzlix.solid_task.domain.issue;
 import com.puzzlix.solid_task.domain.issue.dto.IssueRequest;
 import com.puzzlix.solid_task.domain.project.Project;
 import com.puzzlix.solid_task.domain.project.ProjectRepository;
+import com.puzzlix.solid_task.domain.user.Role;
 import com.puzzlix.solid_task.domain.user.User;
 import com.puzzlix.solid_task.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,15 @@ public class IssueService {
     }
 
     @Transactional
-    public Issue update(Long issueId, IssueRequest.Update request) {
+    public Issue update(Long issueId, IssueRequest.Update request, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다"));
+
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다"));
+
+        if(!user.getRole().equals(Role.ADMIN) && !issue.getReporter().equals(user))
+            throw new SecurityException("관리자 또는 보고자만 수정 가능합니다.");
 
         if (request.getAssigneeId() != null) {
             User assignee = userRepository.findById(request.getAssigneeId())
@@ -66,10 +73,32 @@ public class IssueService {
     }
 
     @Transactional
-    public void delete(Long issueId) {
-        if (!issueRepository.existsById(issueId))
-            throw new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다");
+    public Issue updateStatus(Long issueId, IssueStatus status, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다"));
 
-        issueRepository.deleteById(issueId);
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다"));
+
+        if(!user.getRole().equals(Role.ADMIN) && !issue.getAssignee().equals(user))
+            throw new SecurityException("관리자 또는 담당자만 수정 가능합니다.");
+
+        issue.setStatus(status);
+
+        return issue;
+    }
+
+    @Transactional
+    public void delete(Long issueId, String userEmail) {
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 이슈를 찾을 수 없습니다"));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 유저가 없습니다"));
+        
+        if(!user.getRole().equals(Role.ADMIN) && !issue.getReporter().getEmail().equals(userEmail))
+            throw new IllegalArgumentException("관리자 또는 보고자만 삭제 가능합니다.");
+
+        issueRepository.delete(issue);
     }
 }

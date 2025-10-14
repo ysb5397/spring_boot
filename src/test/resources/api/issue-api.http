@@ -6,7 +6,8 @@ Content-Type: application/json
 {
     "name": "테스트유저",
     "email": "a@b.com",
-    "password": "asd1234"
+    "password": "asd1234",
+    "role": "USER"
 }
 
 ### 2. 유저 로그인 (POST)
@@ -55,3 +56,13 @@ Authorization: {{token}}
     "description": "반갑습니다",
     "assigneeId": "1"
 }
+
+### 5. 특정 이슈의 상태 변경 (PATCH)
+PATCH http://localhost:8080/api/issues/2/status?type=IN_PROGRESS
+Content-Type: application/json
+Authorization: {{token}}
+
+### 6. 특정 이슈 삭제 (DELETE)
+DELETE http://localhost:8080/api/issues/1
+Content-Type: application/json
+Authorization: {{token}}

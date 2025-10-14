@@ -1,5 +1,7 @@
 package com.puzzlix.solid_task._global.config.jwt;
 
+import com.puzzlix.solid_task.domain.user.Role;
+import com.puzzlix.solid_task.domain.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -23,12 +25,13 @@ public class JwtProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(String email) {
+    public String createToken(User user) {
         Date now  = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .subject(email)
+                .subject(user.getEmail())
+                .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(key)
@@ -37,6 +40,10 @@ public class JwtProvider {
 
     public String getSubject(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public Role getRole(String token) {
+        return Role.valueOf(parseClaims(token).get("role").toString());
     }
 
     public boolean validateToken(String token) {
