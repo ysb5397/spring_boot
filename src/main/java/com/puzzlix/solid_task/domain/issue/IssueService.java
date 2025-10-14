@@ -1,18 +1,19 @@
 package com.puzzlix.solid_task.domain.issue;
 
 import com.puzzlix.solid_task.domain.issue.dto.IssueRequest;
+import com.puzzlix.solid_task.domain.issue.dto.IssueResponse;
 import com.puzzlix.solid_task.domain.project.Project;
 import com.puzzlix.solid_task.domain.project.ProjectRepository;
 import com.puzzlix.solid_task.domain.user.Role;
 import com.puzzlix.solid_task.domain.user.User;
 import com.puzzlix.solid_task.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class IssueService {
     private final ProjectRepository projectRepository;
 
     @Transactional
-    public Issue create(IssueRequest.Create createIssue) {
+    public IssueResponse.FindById create(IssueRequest.Create createIssue) {
         User reporter = userRepository.findById(createIssue.getReporterId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저"));
 
@@ -36,19 +37,21 @@ public class IssueService {
         issue.setReporter(reporter);
         issue.setProject(project);
         issue.setStatus(IssueStatus.TODO);
-        return issueRepository.save(issue);
+        return new IssueResponse.FindById(issueRepository.save(issue));
     }
 
-    public List<Issue> findAll() {
-        return issueRepository.findAll();
+    public List<IssueResponse.FindAll> findAll() {
+        return IssueResponse.FindAll.from(issueRepository.findAll());
     }
 
-    public Issue find(Long id) {
-        return issueRepository.findById(id).orElse(null);
+    public IssueResponse.FindById find(Long issueId) {
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new NoSuchElementException("해당 이슈가 존재하지 않습니다."));
+        return new IssueResponse.FindById(issue);
     }
 
     @Transactional
-    public Issue update(Long issueId, IssueRequest.Update request, String userEmail) {
+    public IssueResponse.FindById update(Long issueId, IssueRequest.Update request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다"));
 
@@ -69,11 +72,11 @@ public class IssueService {
         issue.setTitle(request.getTitle());
         issue.setDescription(request.getDescription());
 
-        return issue;
+        return new IssueResponse.FindById(issue);
     }
 
     @Transactional
-    public Issue updateStatus(Long issueId, IssueStatus status, String userEmail) {
+    public IssueResponse.FindById updateStatus(Long issueId, IssueStatus status, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new NoSuchElementException("해당 유저를 찾을 수 없습니다"));
 
@@ -85,7 +88,7 @@ public class IssueService {
 
         issue.setStatus(status);
 
-        return issue;
+        return new IssueResponse.FindById(issue);
     }
 
     @Transactional

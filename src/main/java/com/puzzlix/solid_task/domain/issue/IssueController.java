@@ -4,8 +4,6 @@ import com.puzzlix.solid_task._global.config.jwt.JwtProvider;
 import com.puzzlix.solid_task._global.dto.CommonResponseDto;
 import com.puzzlix.solid_task.domain.issue.dto.IssueRequest;
 import com.puzzlix.solid_task.domain.issue.dto.IssueResponse;
-import com.puzzlix.solid_task.domain.user.Role;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,28 +19,24 @@ public class IssueController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody IssueRequest.Create createIssue) {
-
-        Issue issue = issueService.create(createIssue);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(issueService.create(createIssue)));
     }
 
     @GetMapping
     public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok().body(CommonResponseDto.success(IssueResponse.FindAll.from(issueService.findAll())));
+        return ResponseEntity.ok().body(CommonResponseDto.success(issueService.findAll()));
     }
 
     @GetMapping("/{issueId}")
     public ResponseEntity<?> find(@PathVariable("issueId") Long issueId) {
-        Issue issue = issueService.find(issueId);
-        return ResponseEntity.ok().body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
+        return ResponseEntity.ok().body(CommonResponseDto.success(issueService.find(issueId)));
     }
 
     @PutMapping("/{issueId}")
     public ResponseEntity<?> update(@PathVariable("issueId") Long issueId,
                                     @RequestBody IssueRequest.Update request,
                                     @RequestAttribute("userEmail") String userEmail) {
-        Issue issue = issueService.update(issueId, request, userEmail);
-        return ResponseEntity.ok().body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
+        return ResponseEntity.ok().body(CommonResponseDto.success(issueService.update(issueId, request, userEmail)));
     }
 
     @PatchMapping("/{issueId}/status")
@@ -50,8 +44,7 @@ public class IssueController {
                                           @RequestParam("type") IssueStatus status,
                                           @RequestAttribute("userEmail") String userEmail) {
 
-        Issue issue = issueService.updateStatus(issueId, status, userEmail);
-        return ResponseEntity.ok().body(CommonResponseDto.success(new IssueResponse.FindById(issue)));
+        return ResponseEntity.ok().body(CommonResponseDto.success(issueService.updateStatus(issueId, status, userEmail)));
     }
 
     @DeleteMapping("/{issueId}")

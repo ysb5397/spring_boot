@@ -4,7 +4,6 @@ import com.puzzlix.solid_task._global.config.jwt.JwtProvider;
 import com.puzzlix.solid_task._global.dto.CommonResponseDto;
 import com.puzzlix.solid_task.domain.user.dto.UserRequest;
 import com.puzzlix.solid_task.domain.user.dto.UserResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +17,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    private final JwtProvider jwtProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid @RequestBody UserRequest.SignUp request) {
-        User newUser = userService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(new UserResponse.Detail(newUser)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponseDto.success(userService.signUp(request)));
     }
 
     @PostMapping("/login/{type}")
     public ResponseEntity<?> login(@Valid @RequestBody UserRequest.Login request, @PathVariable("type") String type, HttpServletResponse response) {
-        User loginUser = userService.login(type, request);
-        String token = jwtProvider.createToken(loginUser);
+        String token = userService.login(type, request);
         response.setHeader("Authorization", "Bearer " + token);
-        return ResponseEntity.ok().body(CommonResponseDto.success(new UserResponse.Detail(loginUser)));
+        return ResponseEntity.ok().body(CommonResponseDto.success(null, "로그인이 완료되었습니다"));
     }
 }
