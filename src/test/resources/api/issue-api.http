@@ -15,8 +15,8 @@ POST http://localhost:8080/api/users/login/local
 Content-Type: application/json
 
 {
-    "email": "a@a.com",
-    "password": "1234"
+    "email": "admin@admin.com",
+    "password": "admin123"
 }
 
 ### 아래 토큰 자동 주입
@@ -31,7 +31,7 @@ Authorization: {{token}}
 {
     "title": "세번째 글입니다",
     "description": "글의 내용입니다",
-    "reporterId": 3,
+    "reporterId": 1,
     "projectId": 1
 }
 
@@ -57,7 +57,7 @@ Authorization: {{token}}
 }
 
 ### 5. 특정 이슈의 상태 변경 (PATCH)
-PATCH http://localhost:8080/api/issues/1/status?type=IN_PROGRESS
+PATCH http://localhost:8080/api/issues/1/status?type=DONE
 Content-Type: application/json
 Authorization: {{token}}
 

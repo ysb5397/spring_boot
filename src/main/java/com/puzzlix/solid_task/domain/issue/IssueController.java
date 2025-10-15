@@ -1,9 +1,7 @@
 package com.puzzlix.solid_task.domain.issue;
 
-import com.puzzlix.solid_task._global.config.jwt.JwtProvider;
 import com.puzzlix.solid_task._global.dto.CommonResponseDto;
 import com.puzzlix.solid_task.domain.issue.dto.IssueRequest;
-import com.puzzlix.solid_task.domain.issue.dto.IssueResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/issues")
 @RequiredArgsConstructor
 public class IssueController {
-
     private final IssueService issueService;
-    private final JwtProvider jwtProvider;
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody IssueRequest.Create createIssue) {
