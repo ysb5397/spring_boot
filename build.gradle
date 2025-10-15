@@ -46,6 +46,8 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
 	// 3. jjwt-jackson: JSON 파서
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
